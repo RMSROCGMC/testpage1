@@ -7,234 +7,213 @@
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; --bg: #f8f9fa; }
         body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; user-select: none; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
         .stats-bar { display: flex; justify-content: space-between; padding: 10px; background: #eee; border-radius: 8px; margin-bottom: 20px; font-weight: bold; position: sticky; top: 0; z-index: 100; }
-        .question-card { margin-bottom: 25px; padding: 15px; border: 1px solid #ddd; border-radius: 10px; }
+        .question-card { margin-bottom: 25px; padding: 15px; border: 1px solid #ddd; border-radius: 10px; text-align: left; }
         .options { display: grid; gap: 8px; margin-top: 10px; }
         .opt-btn { padding: 12px; border: 1px solid #ccc; background: #fff; border-radius: 6px; cursor: pointer; text-align: left; }
         .opt-btn.selected { background: var(--secondary); color: white; }
         .opt-btn.correct { background: var(--success) !important; color: white !important; }
         .opt-btn.wrong { background: var(--error) !important; color: white !important; }
         .main-btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; color: white; font-weight: bold; margin-top: 10px; }
+        .start-btn { background: var(--success); font-size: 1.5em; max-width: 300px; }
         .submit-btn { background: var(--primary); }
-        .start-btn { background: var(--success); font-size: 1.5em; }
-        .result-screen { text-align: center; display: none; }
+        .result-screen { display: none; }
         .score-circle { width: 150px; height: 150px; border-radius: 50%; border: 10px solid var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 3em; margin: 20px auto; color: var(--primary); font-weight: bold; }
+        #warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(231, 76, 60, 0.95); color: white; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
         .hidden { display: none; }
-        #warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(231, 76, 60, 0.9); color: white; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 999; text-align: center; }
+        .review-item { text-align: left; padding: 15px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
 <div id="warning-overlay">
-    <h1>⚠️ 警告：偵測到切換視窗，請不要試圖挑戰開發者的權威 ⚠️</h1>
-    <p>測驗期間禁止離開此頁面。再次違規將強制交卷！ by張永旭</p>
-    <button class="main-btn" style="width: 200px;" onclick="closeWarning()">我了解了</button>
+    <h1>⚠️ 最後警告 ⚠️</h1>
+    <p>測驗期間禁止切換視窗。再次違規將直接交卷，不要試圖挑戰開發者的權威！</p>
+    <button class="main-btn" style="width: 200px; background: white; color: var(--error);" onclick="closeWarning()">回到測驗</button>
 </div>
 
-<div class="container" id="main-app">
-    <div id="start-screen" style="text-align: center; padding: 50px 0;">
+<div class="container">
+    <div id="start-screen">
         <h1>114學年度國防複習測驗</h1>
-        <p style="color: #e74c3c; font-weight: bold;">注意：按下確認後將進入全螢幕模式，不得切換視窗！</p>
-        <button class="main-btn start-btn" onclick="startQuiz()">開始測驗</button>
+        <p style="color: var(--error); font-weight: bold; margin: 20px 0;">注意：按下確認後將進入全螢幕模式，不得切換視窗！</p>
+        <button class="main-btn start-btn" onclick="requestStart()">開始測驗</button>
     </div>
 
     <div id="quiz-ui" class="hidden">
         <div class="stats-bar">
-            <span>進度：<span id="progress">0</span> / <span id="total-q-label">35</span></span>
-            <span id="cheat-count">切換限制：1 次</span>
+            <span>進度：<span id="progress">0</span> / 35</span>
+            <span id="cheat-msg" style="color: var(--error);">切換限制：1 次</span>
         </div>
         <div id="quiz-container"></div>
-        <button class="main-btn submit-btn" onclick="confirmSubmit()">提交測驗</button>
+        <button class="main-btn submit-btn" onclick="manualSubmit()">結算分數</button>
     </div>
 
     <div id="result-screen" class="result-screen">
         <h2>測驗結算報告</h2>
         <div class="score-circle" id="final-score">0</div>
         <p id="result-msg" style="font-size: 1.2em; font-weight: bold;"></p>
-        <hr>
-        <div id="answer-review"></div>
-        <div class="btn-group" style="display: flex; gap: 10px;">
+        <div class="btn-group" style="display: flex; gap: 10px; margin: 20px 0;">
             <button class="main-btn" style="background: #95a5a6;" onclick="location.reload()">全部重新</button>
-            <button id="retry-btn" class="main-btn" style="background: #f39c12;" onclick="retryWrong()">重測錯題</button>
+            <button id="retry-btn" class="main-btn" style="background: #f39c12; display: none;" onclick="retryWrongs()">重測錯題</button>
         </div>
+        <div id="review-list"></div>
     </div>
 </div>
 
 <script>
-    [span_0](start_span)// 完整 35 題資料 (引用自 PDF[span_0](end_span))
     const fullBank = [
-        { q: "關鍵基礎設施(Critical Infrastructure)通常包含能源、水資源等。下列何者「最不符合」核心定義？", o: ["(A)東港海事", "(B)桃園國際機場", "(C)台電變電所", "(D)臺大醫院"], a: "A" },
-        { q: "國防部會同哪一個機關定之申請國軍支援救災辦法？", o: ["(A)內政部", "(B)交通部", "(C)經濟部", "(D)財政部"], a: "A" },
+        { q: "關鍵基礎設施核心定義，下列何者「最不符合」？", o: ["(A)東港海事", "(B)桃園國際機場", "(C)台電變電所", "(D)臺大醫院"], a: "A" },
+        { q: "申請國軍協助救災辦法，由國防部會同哪一機關定之？", o: ["(A)內政部", "(B)交通部", "(C)經濟部", "(D)財政部"], a: "A" },
         { q: "國軍部隊每年最重要的實兵演練是？", o: ["(A)漢光演習", "(B)萬安演習", "(C)同心演習", "(D)民安演習"], a: "A" },
-        { q: "國防部應與哪個部會組成作業編組，辦理國防工業調查？", o: ["(A)內政部", "(B)農業部", "(C)交通部", "(D)經濟部"], a: "D" },
-        { q: "「中央全民防衛動員準備業務會報」召集人由何人兼任？", o: ["(A)國安局長", "(B)參謀總長", "(C)國防部長", "(D)行政院長"], a: "D" },
+        { q: "《全動法》第17條，辦理國防工業調查應與哪部會組成作業編組？", o: ["(A)內政部", "(B)農業部", "(C)交通部", "(D)經濟部"], a: "D" },
+        { q: "「中央全民防衛動員準備業務會報」召集人由誰兼任？", o: ["(A)國安局長", "(B)參謀總長", "(C)國防部長", "(D)行政院長"], a: "D" },
         { q: "與青年服勤動員具有緊密關聯性的教育類型是？", o: ["(A)全民國防教育", "(B)災害防救教育", "(C)軍事訓練教育", "(D)交通安全教育"], a: "B" },
-        { q: "依據我國《兵役法施行法》規定，教育召集於退伍後幾年之內？", o: ["(A)7", "(B)8", "(C)9", "(D)10"], a: "B" },
-        { q: "動員準備事項應由何者納入年度施政計畫？", o: ["(A)國防部與內政負責", "(B)僅中央機關", "(C)中央各機關及地方政府", "(D)總統發布命令後"], a: "C" },
-        { q: "下列哪一項「不是」青年學生戰時發揮的作用？", o: ["(A)後勤支援", "(B)自助助人", "(C)第一線戰場執行任務", "(D)協助交通管制"], a: "C" },
+        { q: "依《兵役法施行法》，教育召集於退伍後幾年內？", o: ["(A)7", "(B)8", "(C)9", "(D)10"], a: "B" },
+        { q: "動員準備事項應由何者納入年度施政計畫？", o: ["(A)國防部與內政", "(B)僅中央機關", "(C)中央各機關及地方政府", "(D)總統發布命令後"], a: "C" },
+        { q: "青年學生在戰時「不是」發揮哪種作用？", o: ["(A)後勤支援", "(B)自助助人", "(C)第一線戰場執行任務", "(D)協助交通管制"], a: "C" },
         { q: "學校青年防護團遴選條件不包含？", o: ["(A)服務熱心", "(B)具專長技能", "(C)志願參加", "(D)體態較佳"], a: "D" },
-        { q: "現代國防不單是軍事行為，下列何者不包含？", o: ["(A)國力", "(B)軍力", "(C)民力", "(D)財力"], a: "D" },
-        { q: "我國軍民聯合防空演習代號？", o: ["(A)萬箭", "(B)萬平", "(C)萬安", "(D)萬乘"], a: "C" },
-        { q: "針對關鍵基礎設施防護「韌性」的核心目標？", o: ["(A)數據雲端化", "(B)確保不會受損", "(C)遭攻擊後維持能力並迅速恢復", "(D)降低成本"], a: "C" },
-        { q: "「毒化物質災害」處置方式？", o: ["(A)沖脫泡蓋送", "(B)避脫沖蓋送", "(C)脫沖泡蓋送", "(D)脫沖避蓋送"], a: "B" },
-        { q: "災害防救除了政府，何人也必須體認危險？", o: ["(A)個人", "(B)縣市長", "(C)行政院長", "(D)總統"], a: "A" },
-        { q: "2025年7月花蓮堰塞湖事件，中央業務主管機關？", o: ["(A)內政部", "(B)經濟部", "(C)環境部", "(D)農業部"], a: "D" },
-        { q: "「平時急救宣導」與「救災裝備檢修」，由哪個組負責？", o: ["(A)通報組", "(B)避難引導組", "(C)搶救組", "(D)安全防護組"], a: "C" },
-        { q: "臺灣位於歐亞與菲律賓海板塊交會之？", o: ["(A)歐亞地震帶", "(B)環太平洋地震帶", "(C)大陸斷裂谷", "(D)大中洋脊"], a: "B" },
-        { q: "面對複合式災害考驗，全民應秉持的精神？", o: ["(A)減災即作戰", "(B)救災即作戰", "(C)防災即作戰", "(D)離災即作戰"], a: "B" },
-        { q: "民國89年7月19日頒布之法規？", o: ["(A)停班課辦法", "(B)國軍救災辦法", "(C)災害防救法", "(D)事故調查會"], a: "C" },
-        { q: "進駐縣市災防中心擔任協調平臺的單位？", o: ["(A)後方指揮部", "(B)後送指揮部", "(C)後備指揮部", "(D)後勤指揮部"], a: "C" },
-        { q: "中央災害防救會報召集人？", o: ["(A)總統", "(B)副總統", "(C)行政院長", "(D)國防部長"], a: "C" },
-        { q: "國軍救災指導「不包含」？", o: ["(A)超前部署", "(B)預置兵力", "(C)隨時防救", "(D)無縫接軌"], a: "D" },
-        { q: "依命令進行兵力派遣與機具調度的應變中心？", o: ["(A)國防部", "(B)海巡署", "(C)消防署", "(D)警政署"], a: "A" },
-        { q: "下列哪項非校安狀況類別？", o: ["(A)一般性", "(B)集體重大", "(C)全國重大", "(D)地方事故"], a: "D" },
-        { q: "學校災害防救意義「不包含」？", o: ["(A)協助避災", "(B)協助災民", "(C)收容災民", "(D)協助補助申請"], a: "D" },
-        { q: "校安中心指定待命時間？", o: ["(A)8小時", "(B)12小時", "(C)16小時", "(D)24小時"], a: "D" },
-        { q: "下列何者「不是」災防四階段？", o: ["(A)減災", "(B)整備", "(C)復原", "(D)離災"], a: "D" },
-        { q: "校安中心聯繫待命方式由何機關規定？", o: ["(A)教育部", "(B)內政部", "(C)國防部", "(D)法務部"], a: "A" },
-        { q: "校安中心組織運作方式？", o: ["(A)興趣編組", "(B)任務編組", "(C)職務編組", "(D)臨時指派"], a: "B" },
-        { q: "「全民防衛韌性委員會」副召集人「不包含」？", o: ["(A)行政院長", "(B)國防部長", "(C)內政部長", "(D)總統府秘書長"], a: "D" },
+        { q: "現代國防不再是單純軍事行為，不包含哪一層面？", o: ["(A)國力", "(B)軍力", "(C)民力", "(D)財力"], a: "D" },
+        { q: "我國軍民聯合防空演習代號是？", o: ["(A)萬箭", "(B)萬平", "(C)萬安", "(D)萬乘"], a: "C" },
+        { q: "關鍵基礎設施防護強調的「韌性」，核心目標為何？", o: ["(A)數據雲端化", "(B)確保不會受損", "(C)遭受攻擊後維持核心能力並迅速恢復", "(D)降低建設成本"], a: "C" },
+        { q: "「毒化物質災害」應如何處置？", o: ["(A)沖脫泡蓋送", "(B)避脫沖蓋送", "(C)脫沖泡蓋送", "(D)脫沖避蓋送"], a: "B" },
+        { q: "災害防救應變除了政府，何人也必須體認危險？", o: ["(A)個人", "(B)縣市長", "(C)行政院長", "(D)總統"], a: "A" },
+        { q: "2025年花蓮馬太鞍溪堰塞湖事件，中央業務主管機關為？", o: ["(A)內政部", "(B)經濟部", "(C)環境部", "(D)農業部"], a: "D" },
+        { q: "「平時急救宣導」與「救災裝備檢修」由哪組負責？", o: ["(A)通報組", "(B)避難引導組", "(C)搶救組", "(D)安全防護組"], a: "C" },
+        { q: "臺灣位於哪一個地震帶？", o: ["(A)歐亞地震帶", "(B)環太平洋地震帶", "(C)大陸斷裂谷", "(D)大中洋脊"], a: "B" },
+        { q: "面對複合式災害，全民應秉持何種精神？", o: ["(A)減災即作戰", "(B)救災即作戰", "(C)防災即作戰", "(D)離災即作戰"], a: "B" },
+        { q: "民國89年7月19日訂頒之災害防救核心法規？", o: ["(A)停班課辦法", "(B)國軍救災辦法", "(C)災害防救法", "(D)事故調查會"], a: "C" },
+        { q: "派員進駐縣市災害應變中心之兵力物力協調單位？", o: ["(A)後方指揮部", "(B)後送指揮部", "(C)後備指揮部", "(D)後勤指揮部"], a: "C" },
+        { q: "我國中央災害防救會報由何人主持？", o: ["(A)總統", "(B)副總統", "(C)行政院長", "(D)國防部長"], a: "C" },
+        { q: "下列何者「不是」國軍救災指導？", o: ["(A)超前部署", "(B)預置兵力", "(C)隨時防救", "(D)無縫接軌"], a: "D" },
+        { q: "執行兵力派遣、數據統計任務之應變中心是？", o: ["(A)國防部", "(B)海巡署", "(C)消防署", "(D)警政署"], a: "A" },
+        { q: "哪一項不是校園安全狀況區分類別？", o: ["(A)一般性", "(B)集體性重大", "(C)全國性重大", "(D)地方性事故"], a: "D" },
+        { q: "學校災害防救意義不包含？", o: ["(A)協助避災", "(B)協助災民", "(C)收容災民", "(D)協助補助申請"], a: "D" },
+        { q: "校安中心指定待命時間為何？", o: ["(A)8小時", "(B)12小時", "(C)16小時", "(D)24小時"], a: "D" },
+        { q: "哪一個不是我國災害防救階段？", o: ["(A)減災", "(B)整備", "(C)復原", "(D)離災"], a: "D" },
+        { q: "高中以上校安中心聯繫待命方式由何機關規定？", o: ["(A)教育部", "(B)內政部", "(C)國防部", "(D)法務部"], a: "A" },
+        { q: "校安中心組織運作採取何種方式？", o: ["(A)興趣編組", "(B)任務編組", "(C)職務編組", "(D)臨時指派"], a: "B" },
+        { q: "「全民防衛韌性委員會」副召集人不包含？", o: ["(A)行政院長", "(B)國防部長", "(C)內政部長", "(D)總統府秘書長"], a: "D" },
         { q: "防災計畫應規劃之內容？", o: ["(A)集結點", "(B)聯繫方式", "(C)避難路線", "(D)物資發放"], a: "D" },
-        { q: "軍事侵略應變，何者錯誤？", o: ["(A)地上優於地下", "(B)室內優於室外", "(C)遠離門窗", "(D)避開危險品"], a: "A" },
-        { q: "校安事件獲悉管道不包含？", o: ["(A)學生反映", "(B)匿名檢舉", "(C)家長通報", "(D)警方通報"], a: "B" },
-        { q: "緊急避難包「非必需品」？", o: ["(A)藥品", "(B)信用卡", "(C)食物", "(D)衣物"], a: "B" }
+        { q: "軍事侵略應變方式，下列何者錯誤？", o: ["(A)地上優於地下", "(B)室內優於室外", "(C)遠離門窗", "(D)避開危險品"], a: "A" },
+        { q: "學校校安事件獲悉管道不包含？", o: ["(A)學生反映", "(B)匿名檢舉", "(C)家長通報", "(D)警方通報"], a: "B" },
+        { q: "緊急避難包「非」求生必需品？", o: ["(A)藥品", "(B)信用卡", "(C)食物", "(D)衣物"], a: "B" }
     ];
 
-    let currentQuestions = [];
+    let currentPool = [];
     let userSelections = {};
-    let cheatAttempts = 0;
-    let isQuizActive = false;
+    let cheatCount = 0;
+    let quizActive = false;
 
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-    }
-
-    function startQuiz() {
-        if (confirm("按下確認後進入全螢幕模式，切換視窗超過 1 次將強制交卷！")) {
-            enterFullScreen();
-            isQuizActive = true;
+    function requestStart() {
+        if (confirm("確認後進入全螢幕，切換視窗 2 次將強制交卷，不要試圖挑戰開發者的權威！")) {
+            enterFS();
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('quiz-ui').classList.remove('hidden');
+            quizActive = true;
             initQuiz(fullBank);
         }
     }
 
-    function initQuiz(questions) {
-        currentQuestions = JSON.parse(JSON.stringify(questions));
-        shuffle(currentQuestions);
-        userSelections = {};
-        document.getElementById('total-q-label').innerText = currentQuestions.length;
-        renderQuestions();
+    function enterFS() {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen();
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
     }
 
-    function renderQuestions() {
+    function initQuiz(questions) {
+        currentPool = [...questions];
+        for (let i = currentPool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [currentPool[i], currentPool[j]] = [currentPool[j], currentPool[i]];
+        }
+        userSelections = {};
+        renderQuiz();
+    }
+
+    function renderQuiz() {
         const container = document.getElementById('quiz-container');
         container.innerHTML = '';
-        currentQuestions.forEach((item, idx) => {
+        currentPool.forEach((item, idx) => {
             const card = document.createElement('div');
             card.className = 'question-card';
-            card.innerHTML = `<strong>${idx+1}. ${item.q}</strong><div class="options" id="opts-${idx}"></div>`;
+            card.innerHTML = `<strong>${idx+1}. ${item.q}</strong><div class="options" id="q-${idx}"></div>`;
             container.appendChild(card);
-            
             item.o.forEach((opt, oIdx) => {
+                const char = String.fromCharCode(65 + oIdx);
                 const btn = document.createElement('button');
                 btn.className = 'opt-btn';
                 btn.innerText = opt;
-                btn.onclick = () => selectOption(idx, String.fromCharCode(65 + oIdx), btn);
-                document.getElementById(`opts-${idx}`).appendChild(btn);
+                btn.onclick = () => {
+                    userSelections[idx] = char;
+                    Array.from(btn.parentElement.children).forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    document.getElementById('progress').innerText = Object.keys(userSelections).length;
+                };
+                document.getElementById(`q-${idx}`).appendChild(btn);
             });
         });
-    }
-
-    function selectOption(qIdx, val, btn) {
-        userSelections[qIdx] = val;
-        const parent = btn.parentElement;
-        Array.from(parent.children).forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        document.getElementById('progress').innerText = Object.keys(userSelections).length;
-    }
-
-    function confirmSubmit() {
-        if (confirm("確定要交卷結算嗎？")) endQuiz();
-    }
-
-    function endQuiz() {
-        isQuizActive = false;
-        document.getElementById('quiz-ui').classList.add('hidden');
-        document.getElementById('result-screen').classList.display = 'block';
-        document.getElementById('result-screen').style.display = 'block';
-        
-        let scoreCount = 0;
-        const reviewContainer = document.getElementById('answer-review');
-        reviewContainer.innerHTML = '<h3>題目詳情：</h3>';
-        
-        const wrongs = [];
-
-        currentQuestions.forEach((item, idx) => {
-            const userAns = userSelections[idx] || "未答";
-            const isCorrect = userAns === item.a;
-            if (isCorrect) scoreCount++;
-            else wrongs.push(item);
-
-            const div = document.createElement('div');
-            div.style.textAlign = 'left';
-            div.style.padding = '10px';
-            div.style.borderBottom = '1px solid #ddd';
-            div.innerHTML = `
-                <p><strong>${idx+1}. ${item.q}</strong></p>
-                <p style="color:${isCorrect ? 'green':'red'}">
-                    您的答案：${userAns} | 正確答案：${item.a}
-                </p>
-            `;
-            reviewContainer.appendChild(div);
-        });
-
-        const score = Math.round((scoreCount / currentQuestions.length) * 100);
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('result-msg').innerText = `答對：${scoreCount} / ${currentQuestions.length}`;
-        
-        document.getElementById('retry-btn').onclick = () => {
-            if(wrongs.length > 0) retryWrong(wrongs);
-            else alert("全對！太棒了！");
-        };
-    }
-
-    function retryWrong(wrongList) {
-        document.getElementById('result-screen').style.display = 'none';
-        document.getElementById('quiz-ui').classList.remove('hidden');
-        initQuiz(wrongList);
-        isQuizActive = true;
         window.scrollTo(0,0);
     }
 
-    // 防作弊邏輯
+    function manualSubmit() {
+        if (confirm("確定交卷結算嗎？")) performSubmit();
+    }
+
+    function performSubmit() {
+        quizActive = false;
+        document.getElementById('quiz-ui').classList.add('hidden');
+        document.getElementById('result-screen').style.display = 'block';
+        
+        let correct = 0;
+        const wrongs = [];
+        const review = document.getElementById('review-list');
+        review.innerHTML = '<h3>答案詳解：</h3>';
+
+        currentPool.forEach((item, idx) => {
+            const ans = userSelections[idx] || "未答";
+            const right = ans === item.a;
+            if (right) correct++; else wrongs.push(item);
+
+            review.innerHTML += `
+                <div class="review-item">
+                    <p><strong>${idx+1}. ${item.q}</strong></p>
+                    <p style="color:${right ? 'green' : 'red'}">您的答案：${ans} | 正確答案：${item.a}</p>
+                </div>`;
+        });
+
+        const score = Math.round((correct / currentPool.length) * 100);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('result-msg').innerText = `答對：${correct} / ${currentPool.length}`;
+        
+        if (wrongs.length > 0) {
+            const btn = document.getElementById('retry-btn');
+            btn.style.display = 'block';
+            btn.onclick = () => {
+                document.getElementById('result-screen').style.display = 'none';
+                document.getElementById('quiz-ui').classList.remove('hidden');
+                quizActive = true;
+                initQuiz(wrongs);
+            };
+        }
+    }
+
     document.addEventListener("visibilitychange", () => {
-        if (document.hidden && isQuizActive) {
-            cheatAttempts++;
-            if (cheatAttempts >= 2) {
-                alert("多次偵測到視窗切換，系統已自動交卷！");
-                endQuiz();
+        if (document.hidden && quizActive) {
+            cheatCount++;
+            if (cheatCount >= 2) {
+                alert("多次切換視窗，強制交卷！");
+                performSubmit();
             } else {
                 document.getElementById('warning-overlay').style.display = 'flex';
-                document.getElementById('cheat-count').innerText = "切換限制：0 次 (最後警告)";
+                document.getElementById('cheat-msg').innerText = "切換限制：0 次 (最後警告)";
             }
         }
     });
 
     function closeWarning() {
         document.getElementById('warning-overlay').style.display = 'none';
-        enterFullScreen();
-    }
-
-    function enterFullScreen() {
-        const docEl = document.documentElement;
-        if (docEl.requestFullscreen) docEl.requestFullscreen();
-        else if (docEl.mozRequestFullScreen) docEl.mozRequestFullScreen();
-        else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+        enterFS();
     }
 </script>
 </body>
