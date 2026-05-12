@@ -5,27 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>國防複習測驗 - 亂序練習版</title>
     <style>
-        :root {
-            --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; --bg: #f8f9fa;
-        }
+        :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; --bg: #f8f9fa; }
         body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: var(--primary); margin-bottom: 5px; }
+        h1 { text-align: center; color: var(--primary); margin: 10px 0; }
         .stats-bar { display: flex; justify-content: space-between; padding: 10px; background: #eee; border-radius: 8px; margin-bottom: 20px; font-weight: bold; position: sticky; top: 10px; z-index: 100; }
-        .question-card { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 10px; }
+        .question-card { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 10px; text-align: left; }
         .question-text { font-size: 1.1em; font-weight: bold; margin-bottom: 12px; display: block; }
         .options { display: grid; gap: 8px; }
-        .opt-btn { padding: 12px; border: 1px solid #ccc; background: #fff; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1em; transition: 0.2s; }
-        .opt-btn:hover { border-color: var(--secondary); background: #f0f7ff; }
+        .opt-btn { padding: 12px; border: 1px solid #ccc; background: #fff; border-radius: 6px; cursor: pointer; text-align: left; font-size: 1em; }
         .opt-btn.selected { background: var(--secondary); color: white; border-color: var(--secondary); }
-        .opt-btn.correct { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
-        .opt-btn.wrong { background: var(--error) !important; color: white !important; border-color: var(--error) !important; }
+        .opt-btn.correct { background: var(--success) !important; color: white !important; }
+        .opt-btn.wrong { background: var(--error) !important; color: white !important; }
         .btn-group { display: flex; gap: 10px; margin-top: 20px; }
         button.main-btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; color: white; font-weight: bold; }
         .submit-btn { background: var(--primary); }
         .retry-btn { background: #f39c12; }
         .result-screen { display: none; text-align: center; padding: 40px 20px; }
-        .score-circle { width: 150px; height: 150px; border-radius: 50%; border: 10px solid var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 3em; margin: 20px auto; color: var(--primary); font-weight: bold; }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 2.5em; margin: 20px auto; color: var(--primary); font-weight: bold; }
         .hidden { display: none; }
     </style>
 </head>
@@ -33,10 +30,10 @@
 
 <div class="container">
     <div id="quiz-ui">
-        <h1>國防複習測驗 (亂序版)</h1>
+        <h1>國防複習測驗</h1>
         <div class="stats-bar">
-            <span>進度：<span id="progress">0</span> / <span id="total-q">35</span></span>
-            <span>正確答案將於結算後顯示</span>
+            <span>進度：<span id="progress">0</span> / 35</span>
+            <span>結算後顯示答案</span>
         </div>
         <div id="quiz-container"></div>
         <div class="btn-group">
@@ -45,52 +42,51 @@
     </div>
 
     <div id="result-screen" class="result-screen">
-        <h2>測驗結束！</h2>
+        <h2>測驗結束</h2>
         <div class="score-circle" id="final-score">0</div>
-        <p id="result-msg" style="font-size: 1.2em;"></p>
+        <p id="result-msg"></p>
         <div class="btn-group">
-            <button class="main-btn submit-btn" onclick="location.reload()">全部重新(打亂順序)</button>
+            <button class="main-btn submit-btn" onclick="location.reload()">全部重新</button>
             <button class="main-btn retry-btn" id="res-retry-btn" onclick="retryWrongQuestions()">僅重測錯題</button>
         </div>
     </div>
 </div>
 
 <script>
-    [span_0](start_span)// 完整 35 題題庫 (資料來源：[span_0](end_span))
     const fullBank = [
-        { q: "關鍵基礎設施通常包含能源、水資源等。下列何者「最不符合」其核心定義？", o: ["(A)東港海事", "(B)桃園國際機場", "(C)台電變電所", "(D)臺大醫院"], a: "A" },
-        { q: "申請國軍支援或國軍主動協助救災相關事宜之辦法，係由國防部會同哪一個政府機關定之？", o: ["(A)內政部", "(B)交通部", "(C)經濟部", "(D)財政部"], a: "A" },
-        { q: "由國防部主導，為國軍部隊每年最重要的實兵演練是？", o: ["(A)漢光演習", "(B)萬安演習", "(C)同心演習", "(D)民安演習"], a: "A" },
-        { q: "《全民防衛動員準備法》第17條，辦理國防工業發展及軍品生產能力資料調查，應與哪個部會組成編組？", o: ["(A)內政部", "(B)農業部", "(C)交通部", "(D)經濟部"], a: "D" },
-        { q: "行政院設立「中央全民防衛動員準備業務會報」，其召集人由何人兼任？", o: ["(A)國安局長", "(B)參謀總長", "(C)國防部長", "(D)行政院長"], a: "D" },
+        { q: "下列何者「最不符合」關鍵基礎設施的核心定義？", o: ["(A)東港海事", "(B)桃園國際機場", "(C)台電變電所", "(D)臺大醫院"], a: "A" },
+        { q: "國防部會同哪一個政府機關定之申請國軍支援救災辦法？", o: ["(A)內政部", "(B)交通部", "(C)經濟部", "(D)財政部"], a: "A" },
+        { q: "國軍部隊每年最重要的實兵演練是？", o: ["(A)漢光演習", "(B)萬安演習", "(C)同心演習", "(D)民安演習"], a: "A" },
+        { q: "國防部應與哪個部會組成作業編組，辦理國防工業調查？", o: ["(A)內政部", "(B)農業部", "(C)交通部", "(D)經濟部"], a: "D" },
+        { q: "「中央全民防衛動員準備業務會報」召集人由何人兼任？", o: ["(A)國安局長", "(B)參謀總長", "(C)國防部長", "(D)行政院長"], a: "D" },
         { q: "與青年服勤動員具有緊密關聯性的教育類型是？", o: ["(A)全民國防教育", "(B)災害防救教育", "(C)軍事訓練教育", "(D)交通安全教育"], a: "B" },
         { q: "依據我國《兵役法施行法》規定，教育召集於退伍後幾年之內？", o: ["(A)7", "(B)8", "(C)9", "(D)10"], a: "B" },
-        { q: "依《全民防衛動員準備法》規定，動員準備事項應由何者納入年度施政計畫推動實施？", o: ["(A)國防部與內政負責", "(B)行政院所屬中央機關主導，地方政府不需納入", "(C)中央各機關及直轄市、縣(市)政府", "(D)總統發布緊急命令後處理"], a: "C" },
-        { q: "下列哪一項「不是」尚未服役的青年學生們可以在戰時發揮的作用？", o: ["(A)後勤支援", "(B)以自身習得的技能，自助助人", "(C)第一線戰場執行任務", "(D)協助交通管制"], a: "C" },
-        { q: "學校青年防護團遴選的條件不包含下列何者？", o: ["(A)服務熱心", "(B)具專長技能", "(C)志願參加", "(D)體態較佳"], a: "D" },
-        { q: "現代國防與國家安全已不再是單純的軍事行為，下列何者不包含在內？", o: ["(A)國力", "(B)軍力", "(C)民力", "(D)財力"], a: "D" },
+        { q: "動員準備事項應由何者納入年度施政計畫推動實施？", o: ["(A)國防部與內政負責", "(B)行政院中央機關", "(C)中央各機關及地方政府", "(D)總統發布命令後"], a: "C" },
+        { q: "下列哪一項「不是」青年學生戰時發揮的作用？", o: ["(A)後勤支援", "(B)自助助人", "(C)第一線戰場執行任務", "(D)協助交通管制"], a: "C" },
+        { q: "學校青年防護團遴選條件不包含下列何者？", o: ["(A)服務熱心", "(B)具專長技能", "(C)志願參加", "(D)體態較佳"], a: "D" },
+        { q: "現代國防不再是單純軍事行為，下列何者不包含在內？", o: ["(A)國力", "(B)軍力", "(C)民力", "(D)財力"], a: "D" },
         { q: "我國軍民聯合防空演習代號是？", o: ["(A)萬箭", "(B)萬平", "(C)萬安", "(D)萬乘"], a: "C" },
-        { q: "針對關鍵基礎設施防護所強調的「韌性(Resilience)」，其核心目標為何？", o: ["(A)數據轉移雲端", "(B)確保不會受損", "(C)遭攻擊後能維持核心能力並迅速恢復", "(D)降低建設成本"], a: "C" },
+        { q: "針對關鍵基礎設施防護所強調的「韌性」，其核心目標為何？", o: ["(A)數據雲端化", "(B)確保不會受損", "(C)受攻擊後能維持核心能力並迅速恢復", "(D)降低成本"], a: "C" },
         { q: "「毒化物質災害」應如何處置？", o: ["(A)沖脫泡蓋送", "(B)避脫沖蓋送", "(C)脫沖泡蓋送", "(D)脫沖避蓋送"], a: "B" },
-        { q: "災害防救與應變除了政府部門努力外，何人也必須深切體認災害危險？", o: ["(A)個人", "(B)縣市長", "(C)行政院長", "(D)總統"], a: "A" },
-        { q: "2025年7月花蓮發生堰塞湖事件造成土石流。中央主管機關為？", o: ["(A)內政部", "(B)經濟部", "(C)環境部", "(D)農業部"], a: "D" },
-        { q: "有關「平時急救常識宣導與訓練」與「檢修與保養救災裝備」，由哪個組組負責？", o: ["(A)通報組", "(B)避難引導組", "(C)搶救組", "(D)安全防護組"], a: "C" },
-        { q: "臺灣位處哪一個地震帶，地震發生相當頻繁？", o: ["(A)歐亞地震帶", "(B)環太平洋地震帶", "(C)大陸斷裂谷", "(D)大中洋脊"], a: "B" },
-        { q: "面對未來複合式災害的嚴峻考驗時，全民應該秉持何種精神？", o: ["(A)減災就是作戰", "(B)救災就是作戰", "(C)防災就是作戰", "(D)離災就是作戰"], a: "B" },
-        { q: "我國為建置完整災害防救體制，於民國89年7月19日訂頒何項法規？", o: ["(A)停班停課作業辦法", "(B)國軍協助救災辦法", "(C)災害防救法", "(D)事故調查會設置辦法"], a: "C" },
-        { q: "派員進駐各縣(市)災害應變中心，擔任兵力支援與物力動員協調平臺的單位是？", o: ["(A)後方指揮部", "(B)後送指揮部", "(C)後備指揮部", "(D)後勤指揮部"], a: "C" },
-        { q: "我國中央災害防救會報係由何人主持？", o: ["(A)總統", "(B)副總統", "(C)行政院長", "(D)國防部長"], a: "C" },
-        { q: "下列何者「不是」國軍執行救災任務所遵循的指導？", o: ["(A)超前部署", "(B)預置兵力", "(C)隨時防救", "(D)無縫接軌"], a: "D" },
-        { q: "依中央命令，進行兵力派遣、機具調度及數據統計等任務的應變中心是？", o: ["(A)國防部", "(B)海巡署", "(C)消防署", "(D)警政署"], a: "A" },
-        { q: "下列哪一項「不是」校園安全狀況之區分類別？", o: ["(A)一般性", "(B)集體性重大", "(C)全國性重大", "(D)地方性事故"], a: "D" },
-        { q: "學校能展現災害防救的重要意義「不包含」下列何者？", o: ["(A)協助師生避免災害", "(B)協助受災民眾", "(C)收容受災民眾", "(D)協助補助申請"], a: "D" },
-        { q: "各級校安中心應隨時應變任何安全問題，其指定待命時間為何？", o: ["(A)8小時", "(B)12小時", "(C)16小時", "(D)24小時"], a: "D" },
-        { q: "下列何者「不是」我國災害防救的階段？", o: ["(A)減災", "(B)整備", "(C)復原", "(D)離災"], a: "D" },
-        { q: "高級中等以上學校校安中心之聯繫待命方式係由哪一個政府機關規定？", o: ["(A)教育部", "(B)內政部", "(C)國防部", "(D)法務部"], a: "A" },
+        { q: "災害防救除了政府努力外，何人也必須體認災害危險？", o: ["(A)個人", "(B)縣市長", "(C)行政院長", "(D)總統"], a: "A" },
+        { q: "2025年7月花蓮堰塞湖事件造成土石流，中央主管機關為？", o: ["(A)內政部", "(B)經濟部", "(C)環境部", "(D)農業部"], a: "D" },
+        { q: "有關「平時急救常識宣導」與「救災裝備檢修」，由哪個組負責？", o: ["(A)通報組", "(B)避難引導組", "(C)搶救組", "(D)安全防護組"], a: "C" },
+        { q: "臺灣位處哪一個地震帶？", o: ["(A)歐亞地震帶", "(B)環太平洋地震帶", "(C)大陸斷裂谷", "(D)大中洋脊"], a: "B" },
+        { q: "面對複合式災害嚴峻考驗，全民應秉持何種精神？", o: ["(A)減災即作戰", "(B)救災即作戰", "(C)防災即作戰", "(D)離災即作戰"], a: "B" },
+        { q: "我國於民國89年7月19日訂頒之災害防救核心法規？", o: ["(A)停班課辦法", "(B)國軍協助救災辦法", "(C)災害防救法", "(D)事故調查會"], a: "C" },
+        { q: "派員進駐各縣市災害應變中心，擔任兵力物力協調平臺的單位？", o: ["(A)後方指揮部", "(B)後送指揮部", "(C)後備指揮部", "(D)後勤指揮部"], a: "C" },
+        { q: "我國中央災害防救會報由何人主持？", o: ["(A)總統", "(B)副總統", "(C)行政院長", "(D)國防部長"], a: "C" },
+        { q: "下列何者「不是」國軍救災任務遵循的指導？", o: ["(A)超前部署", "(B)預置兵力", "(C)隨時防救", "(D)無縫接軌"], a: "D" },
+        { q: "進行兵力派遣、機具調度及數據統計任務之應變中心是？", o: ["(A)國防部", "(B)海巡署", "(C)消防署", "(D)警政署"], a: "A" },
+        { q: "下列哪一項「不是」校園安全狀況區分類別？", o: ["(A)一般性", "(B)集體重大", "(C)全國重大", "(D)地方事故"], a: "D" },
+        { q: "學校展現災害防救重要意義不包含下列何者？", o: ["(A)協助師生避災", "(B)協助災民", "(C)收容災民", "(D)協助補助申請"], a: "D" },
+        { q: "各級校安中心指定待命時間為何？", o: ["(A)8小時", "(B)12小時", "(C)16小時", "(D)24小時"], a: "D" },
+        { q: "下列何者「不是」我國災害防救階段？", o: ["(A)減災", "(B)整備", "(C)復原", "(D)離災"], a: "D" },
+        { q: "校安中心之聯繫待命方式由哪一個機關規定？", o: ["(A)教育部", "(B)內政部", "(C)國防部", "(D)法務部"], a: "A" },
         { q: "校安中心在組織運作上採取何種方式？", o: ["(A)興趣編組", "(B)任務編組", "(C)職務編組", "(D)臨時指派"], a: "B" },
-        { q: "民國113年成立「全民防衛韌性委員會」，其副召集人「不包含」何人？", o: ["(A)行政院長", "(B)國防部長", "(C)內政部長", "(D)總統府秘書長"], a: "D" },
-        { q: "下列何者為防災計畫應規劃之內容？", o: ["(A)緊急集結地點", "(B)聯繫方式", "(C)避難路線", "(D)物資發放地點"], a: "D" },
-        { q: "關於「軍事侵略」的應變方式，下列何者錯誤？", o: ["(A)地上優於地下", "(B)室內優於室外", "(C)遠離外牆門窗", "(D)避開危險物品"], a: "A" },
+        { q: "「全民防衛韌性委員會」副召集人不包含何人？", o: ["(A)行政院長", "(B)國防部長", "(C)內政部長", "(D)總統府秘書長"], a: "D" },
+        { q: "下列何者為防災計畫應規劃之內容？", o: ["(A)緊急集結點", "(B)聯繫方式", "(C)避難路線", "(D)物資發放地點"], a: "D" },
+        { q: "關於「軍事侵略」應變方式，下列何者錯誤？", o: ["(A)地上優於地下", "(B)室內優於室外", "(C)遠離外牆門窗", "(D)避開危險物品"], a: "A" },
         { q: "下列哪一項「不是」學校校安事件獲悉管道？", o: ["(A)學生反映", "(B)匿名檢舉", "(C)家長通報", "(D)警方通報"], a: "B" },
         { q: "下列哪一項「不是」緊急避難包的求生必需品？", o: ["(A)藥品", "(B)信用卡", "(C)食物", "(D)衣物"], a: "B" }
     ];
@@ -99,7 +95,6 @@
     let userSelections = {};
     let wrongQuestions = [];
 
-    // 洗牌演算法 (只打亂題目順序)
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -111,7 +106,6 @@
         currentQuestions = JSON.parse(JSON.stringify(questions));
         shuffle(currentQuestions);
         userSelections = {};
-        document.getElementById('total-q').innerText = currentQuestions.length;
         renderQuiz();
     }
 
@@ -121,17 +115,15 @@
         currentQuestions.forEach((item, idx) => {
             const card = document.createElement('div');
             card.className = 'question-card';
-            
             let optionsHTML = '';
             item.o.forEach((opt, oIdx) => {
                 const label = String.fromCharCode(65 + oIdx);
                 optionsHTML += `<button class="opt-btn" data-q="${idx}" data-val="${label}" onclick="select(this)">${opt}</button>`;
             });
-
             card.innerHTML = `<span class="question-text">${idx+1}. ${item.q}</span><div class="options">${optionsHTML}</div>`;
             container.appendChild(card);
         });
-        updateStats();
+        document.getElementById('progress').innerText = "0";
     }
 
     function select(btn) {
@@ -139,51 +131,27 @@
         document.querySelectorAll(`.opt-btn[data-q="${qIdx}"]`).forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         userSelections[qIdx] = btn.dataset.val;
-        updateStats();
-    }
-
-    function updateStats() {
         document.getElementById('progress').innerText = Object.keys(userSelections).length;
     }
 
     function submitQuiz() {
-        if (Object.keys(userSelections).length < currentQuestions.length) {
-            if (!confirm("還有題目沒寫完，確定要結算嗎？")) return;
-        }
-
         wrongQuestions = [];
         let correctCount = 0;
-
         currentQuestions.forEach((item, idx) => {
             const userAns = userSelections[idx];
-            const btns = document.querySelectorAll(`.opt-btn[data-q="${idx}"]`);
-            
-            btns.forEach(btn => {
+            document.querySelectorAll(`.opt-btn[data-q="${idx}"]`).forEach(btn => {
                 btn.disabled = true;
                 if(btn.dataset.val === item.a) btn.classList.add('correct');
-                if(userAns === btn.dataset.val && userAns !== item.a) {
-                    btn.classList.add('wrong');
-                }
+                if(userAns === btn.dataset.val && userAns !== item.a) btn.classList.add('wrong');
             });
-
-            if(userAns === item.a) {
-                correctCount++;
-            } else {
-                wrongQuestions.push(item);
-            }
+            if(userAns === item.a) correctCount++;
+            else wrongQuestions.push(item);
         });
-
         const score = Math.round((correctCount / currentQuestions.length) * 100);
-        showResult(score, correctCount);
-    }
-
-    function showResult(score, count) {
         document.getElementById('quiz-ui').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
         document.getElementById('final-score').innerText = score;
-        document.getElementById('result-msg').innerText = `本次答對：${count} / ${currentQuestions.length}`;
-        
-        document.getElementById('res-retry-btn').style.display = (wrongQuestions.length > 0) ? 'block' : 'none';
+        document.getElementById('result-msg').innerText = `答對：${correctCount} / ${currentQuestions.length}`;
     }
 
     function retryWrongQuestions() {
@@ -193,7 +161,7 @@
         window.scrollTo(0,0);
     }
 
-    // 啟動測驗
+    // 啟動指令
     initQuiz(fullBank);
 </script>
 </body>
