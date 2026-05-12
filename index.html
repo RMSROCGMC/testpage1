@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>國防線測</title>
+    <title>114學年度國防複習測驗</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; --bg: #f8f9fa; }
         body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; user-select: none; }
@@ -13,8 +13,6 @@
         .options { display: grid; gap: 8px; margin-top: 10px; }
         .opt-btn { padding: 12px; border: 1px solid #ccc; background: #fff; border-radius: 6px; cursor: pointer; text-align: left; }
         .opt-btn.selected { background: var(--secondary); color: white; }
-        .opt-btn.correct { background: var(--success) !important; color: white !important; }
-        .opt-btn.wrong { background: var(--error) !important; color: white !important; }
         .main-btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; color: white; font-weight: bold; margin-top: 10px; }
         .start-btn { background: var(--success); font-size: 1.5em; max-width: 300px; }
         .submit-btn { background: var(--primary); }
@@ -23,13 +21,14 @@
         #warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(231, 76, 60, 0.95); color: white; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
         .hidden { display: none; }
         .review-item { text-align: left; padding: 15px; border-bottom: 1px solid #eee; }
+        .ans-text { font-weight: bold; padding: 2px 5px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
 <div id="warning-overlay">
     <h1>⚠️ 最後警告 ⚠️</h1>
-    <p>測驗期間禁止切換視窗。再次違規將直接交卷，不要試圖挑戰開發者的權威！</p>
+    <p>測驗期間禁止切換視窗。再次違規將直接交卷，請不要挑戰開發者的權威！</p>
     <button class="main-btn" style="width: 200px; background: white; color: var(--error);" onclick="closeWarning()">回到測驗</button>
 </div>
 
@@ -106,7 +105,7 @@
     let quizActive = false;
 
     function requestStart() {
-        if (confirm("確認後進入全螢幕，切換視窗 2 次將強制交卷，不要試圖挑戰開發者的權威！")) {
+        if (confirm("確認後進入全螢幕，切換視窗 2 次將強制交卷！")) {
             enterFS();
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('quiz-ui').classList.remove('hidden');
@@ -165,26 +164,31 @@
         document.getElementById('quiz-ui').classList.add('hidden');
         document.getElementById('result-screen').style.display = 'block';
         
-        let correct = 0;
+        let correctCount = 0;
         const wrongs = [];
         const review = document.getElementById('review-list');
         review.innerHTML = '<h3>答案詳解：</h3>';
 
         currentPool.forEach((item, idx) => {
-            const ans = userSelections[idx] || "未答";
-            const right = ans === item.a;
-            if (right) correct++; else wrongs.push(item);
+            const userCode = userSelections[idx];
+            const userText = userCode ? item.o[userCode.charCodeAt(0) - 65] : "未作答";
+            const rightCode = item.a;
+            const rightText = item.o[rightCode.charCodeAt(0) - 65];
+            const isRight = userCode === rightCode;
+
+            if (isRight) correctCount++; else wrongs.push(item);
 
             review.innerHTML += `
                 <div class="review-item">
                     <p><strong>${idx+1}. ${item.q}</strong></p>
-                    <p style="color:${right ? 'green' : 'red'}">您的答案：${ans} | 正確答案：${item.a}</p>
+                    <p>您的答案：<span class="ans-text" style="color:${isRight ? 'green' : 'red'}">${userText}</span></p>
+                    ${!isRight ? `<p>正確答案：<span class="ans-text" style="color:green">${rightText}</span></p>` : ''}
                 </div>`;
         });
 
-        const score = Math.round((correct / currentPool.length) * 100);
+        const score = Math.round((correctCount / currentPool.length) * 100);
         document.getElementById('final-score').innerText = score;
-        document.getElementById('result-msg').innerText = `答對：${correct} / ${currentPool.length}`;
+        document.getElementById('result-msg').innerText = `答對：${correctCount} / ${currentPool.length}`;
         
         if (wrongs.length > 0) {
             const btn = document.getElementById('retry-btn');
@@ -206,7 +210,7 @@
                 performSubmit();
             } else {
                 document.getElementById('warning-overlay').style.display = 'flex';
-                document.getElementById('cheat-msg').innerText = "切換限制：0 次 (最後警告)";
+                document.getElementById('cheat-msg').innerText = "切換限制：0 次，請不要挑戰開發者的權威！";
             }
         }
     });
