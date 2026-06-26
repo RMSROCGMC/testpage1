@@ -134,7 +134,7 @@
         .btn-submit { background-color: #2c3e50; }
         .btn-retry { background-color: #e67e22; display: none; }
         
-        /* 批改狀態顏色 */
+        /* 批改狀態與答案回饋樣式 */
         .wrong-active {
             border-left: 4px solid #e74c3c;
             background-color: #fdf2f2;
@@ -142,6 +142,18 @@
         .correct-active {
             border-left: 4px solid #2ecc71;
             background-color: #f4fbf7;
+        }
+        .ans-feedback {
+            color: #2980b9;
+            font-weight: bold;
+            font-size: 0.95em;
+            margin-top: 5px;
+            display: block;
+        }
+        .correct-marker {
+            color: #27ae60;
+            font-weight: bold;
+            margin-left: 5px;
         }
         .score-board {
             display: none;
@@ -238,7 +250,7 @@
         </div>
         <div class="question" id="q_t13">
             4. We are discussing something. Do we want to have a BBQ party?<br>
-            <div class="hint">提示：請以 ... whether... 合併句子。</div>
+            <div class="hint">提示：請以 ... whether... 合併句子.</div>
             <input type="text" data-ans="We are discussing whether we want to have a BBQ party." style="width: 95%;">
         </div>
         <div class="question" id="q_t14">
@@ -253,80 +265,80 @@
         <div class="question" id="q_r1">
             1. The scooter rider was fined ______ breaking a traffic rule.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l5_1" value="A"> (A) because</label>
-                <label class="option-label"><input type="radio" name="l5_1" value="B"> (B) due to</label>
-                <label class="option-label"><input type="radio" name="l5_1" value="C"> (C) instead of</label>
-                <label class="option-label"><input type="radio" name="l5_1" value="D"> (D) as a result</label>
+                <label class="option-label"><input type="radio" name="l5_1" data-org="A"> (A) <span class="opt-text">because</span></label>
+                <label class="option-label"><input type="radio" name="l5_1" data-org="B"> (B) <span class="opt-text">due to</span></label>
+                <label class="option-label"><input type="radio" name="l5_1" data-org="C"> (C) <span class="opt-text">instead of</span></label>
+                <label class="option-label"><input type="radio" name="l5_1" data-org="D"> (D) <span class="opt-text">as a result</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r2">
             2. Billy called his wife to ask ______ she needed anything from the supermarket.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l5_2" value="A"> (A) and</label>
-                <label class="option-label"><input type="radio" name="l5_2" value="B"> (B) if</label>
-                <label class="option-label"><input type="radio" name="l5_2" value="C"> (C) what</label>
-                <label class="option-label"><input type="radio" name="l5_2" value="D"> (D) that</label>
+                <label class="option-label"><input type="radio" name="l5_2" data-org="A"> (A) <span class="opt-text">and</span></label>
+                <label class="option-label"><input type="radio" name="l5_2" data-org="B"> (B) <span class="opt-text">if</span></label>
+                <label class="option-label"><input type="radio" name="l5_2" data-org="C"> (C) <span class="opt-text">what</span></label>
+                <label class="option-label"><input type="radio" name="l5_2" data-org="D"> (D) <span class="opt-text">that</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r3">
             3. As children grow older, their opinions often become different from ______ of their parents.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l5_3" value="A"> (A) those</label>
-                <label class="option-label"><input type="radio" name="l5_3" value="B"> (B) that</label>
-                <label class="option-label"><input type="radio" name="l5_3" value="C"> (C) them</label>
-                <label class="option-label"><input type="radio" name="l5_3" value="D"> (D) which</label>
+                <label class="option-label"><input type="radio" name="l5_3" data-org="A"> (A) <span class="opt-text">those</span></label>
+                <label class="option-label"><input type="radio" name="l5_3" data-org="B"> (B) <span class="opt-text">that</span></label>
+                <label class="option-label"><input type="radio" name="l5_3" data-org="C"> (C) <span class="opt-text">them</span></label>
+                <label class="option-label"><input type="radio" name="l5_3" data-org="D"> (D) <span class="opt-text">which</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r4">
             4. Andrew was ______ shocked that he didn't know how to respond.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l5_4" value="A"> (A) over</label>
-                <label class="option-label"><input type="radio" name="l5_4" value="B"> (B) too</label>
-                <label class="option-label"><input type="radio" name="l5_4" value="C"> (C) very</label>
-                <label class="option-label"><input type="radio" name="l5_4" value="D"> (D) so</label>
+                <label class="option-label"><input type="radio" name="l5_4" data-org="A"> (A) <span class="opt-text">over</span></label>
+                <label class="option-label"><input type="radio" name="l5_4" data-org="B"> (B) <span class="opt-text">too</span></label>
+                <label class="option-label"><input type="radio" name="l5_4" data-org="C"> (C) <span class="opt-text">very</span></label>
+                <label class="option-label"><input type="radio" name="l5_4" data-org="D"> (D) <span class="opt-text">so</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r5">
             5. What is your reason ______ studying in a vocational high school?<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l5_5" value="A"> (A) for</label>
-                <label class="option-label"><input type="radio" name="l5_5" value="B"> (B) to</label>
-                <label class="option-label"><input type="radio" name="l5_5" value="C"> (C) of</label>
-                <label class="option-label"><input type="radio" name="l5_5" value="D"> (D) over</label>
+                <label class="option-label"><input type="radio" name="l5_5" data-org="A"> (A) <span class="opt-text">for</span></label>
+                <label class="option-label"><input type="radio" name="l5_5" data-org="B"> (B) <span class="opt-text">to</span></label>
+                <label class="option-label"><input type="radio" name="l5_5" data-org="C"> (C) <span class="opt-text">of</span></label>
+                <label class="option-label"><input type="radio" name="l5_5" data-org="D"> (D) <span class="opt-text">over</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r6">
             6. The success of the plan depends on ______ we can find the perfect location.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l5_6" value="A"> (A) what</label>
-                <label class="option-label"><input type="radio" name="l5_6" value="B"> (B) that</label>
-                <label class="option-label"><input type="radio" name="l5_6" value="C"> (C) whether</label>
-                <label class="option-label"><input type="radio" name="l5_6" value="D"> (D) however</label>
+                <label class="option-label"><input type="radio" name="l5_6" data-org="A"> (A) <span class="opt-text">what</span></label>
+                <label class="option-label"><input type="radio" name="l5_6" data-org="B"> (B) <span class="opt-text">that</span></label>
+                <label class="option-label"><input type="radio" name="l5_6" data-org="C"> (C) <span class="opt-text">whether</span></label>
+                <label class="option-label"><input type="radio" name="l5_6" data-org="D"> (D) <span class="opt-text">however</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r7">
             7. It was ______ great news that I couldn't believe it was true.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l5_7" value="A"> (A) such a</label>
-                <label class="option-label"><input type="radio" name="l5_7" value="B"> (B) a such</label>
-                <label class="option-label"><input type="radio" name="l5_7" value="C"> (C) such</label>
-                <label class="option-label"><input type="radio" name="l5_7" value="D"> (D) so a</label>
+                <label class="option-label"><input type="radio" name="l5_7" data-org="A"> (A) <span class="opt-text">such a</span></label>
+                <label class="option-label"><input type="radio" name="l5_7" data-org="B"> (B) <span class="opt-text">a such</span></label>
+                <label class="option-label"><input type="radio" name="l5_7" data-org="C"> (C) <span class="opt-text">such</span></label>
+                <label class="option-label"><input type="radio" name="l5_7" data-org="D"> (D) <span class="opt-text">so a</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r8">
             8. Some Asian girls wear jackets when they walk in the sun. ______ they don't want to get tanned.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l5_8" value="A"> (A) Therefore</label>
-                <label class="option-label"><input type="radio" name="l5_8" value="B"> (B) This is why</label>
-                <label class="option-label"><input type="radio" name="l5_8" value="C"> (C) Due to</label>
-                <label class="option-label"><input type="radio" name="l5_8" value="D"> (D) That is because</label>
+                <label class="option-label"><input type="radio" name="l5_8" data-org="A"> (A) <span class="opt-text">Therefore</span></label>
+                <label class="option-label"><input type="radio" name="l5_8" data-org="B"> (B) <span class="opt-text">This is why</span></label>
+                <label class="option-label"><input type="radio" name="l5_8" data-org="C"> (C) <span class="opt-text">Due to</span></label>
+                <label class="option-label"><input type="radio" name="l5_8" data-org="D"> (D) <span class="opt-text">That is because</span></label>
             </div>
         </div>
 
@@ -335,80 +347,80 @@
         <div class="question" id="q_r9">
             1. Ben's mother called him down for dinner as ______ to his friend on the phone.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l6_1" value="A"> (A) talked</label>
-                <label class="option-label"><input type="radio" name="l6_1" value="B"> (B) to talk</label>
-                <label class="option-label"><input type="radio" name="l6_1" value="C"> (C) he has talked</label>
-                <label class="option-label"><input type="radio" name="l6_1" value="D"> (D) he was talking</label>
+                <label class="option-label"><input type="radio" name="l6_1" data-org="A"> (A) <span class="opt-text">talked</span></label>
+                <label class="option-label"><input type="radio" name="l6_1" data-org="B"> (B) <span class="opt-text">to talk</span></label>
+                <label class="option-label"><input type="radio" name="l6_1" data-org="C"> (C) <span class="opt-text">he has talked</span></label>
+                <label class="option-label"><input type="radio" name="l6_1" data-org="D"> (D) <span class="opt-text">he was talking</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r10">
             2. The weather report says that this week will be ______ cold ______ last week.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l6_2" value="A"> (A) as; as</label>
-                <label class="option-label"><input type="radio" name="l6_2" value="B"> (B) more; than</label>
-                <label class="option-label"><input type="radio" name="l6_2" value="C"> (C) so; that</label>
-                <label class="option-label"><input type="radio" name="l6_2" value="D"> (D) such; that</label>
+                <label class="option-label"><input type="radio" name="l6_2" data-org="A"> (A) <span class="opt-text">as; as</span></label>
+                <label class="option-label"><input type="radio" name="l6_2" data-org="B"> (B) <span class="opt-text">more; than</span></label>
+                <label class="option-label"><input type="radio" name="l6_2" data-org="C"> (C) <span class="opt-text">so; that</span></label>
+                <label class="option-label"><input type="radio" name="l6_2" data-org="D"> (D) <span class="opt-text">such; that</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r11">
             3. Could you give me ______ on traveling by airplane?<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l6_3" value="A"> (A) a piece of advice</label>
-                <label class="option-label"><input type="radio" name="l6_3" value="B"> (B) an advice</label>
-                <label class="option-label"><input type="radio" name="l6_3" value="C"> (C) some advices</label>
-                <label class="option-label"><input type="radio" name="l6_3" value="D"> (D) a word of advices</label>
+                <label class="option-label"><input type="radio" name="l6_3" data-org="A"> (A) <span class="opt-text">a piece of advice</span></label>
+                <label class="option-label"><input type="radio" name="l6_3" data-org="B"> (B) <span class="opt-text">an advice</span></label>
+                <label class="option-label"><input type="radio" name="l6_3" data-org="C"> (C) <span class="opt-text">some advices</span></label>
+                <label class="option-label"><input type="radio" name="l6_3" data-org="D"> (D) <span class="opt-text">a word of advices</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r12">
             4. Many hotels have adopted a ______ policy for all indoor areas.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l6_4" value="A"> (A) free-smoked</label>
-                <label class="option-label"><input type="radio" name="l6_4" value="B"> (B) free-smoke</label>
-                <label class="option-label"><input type="radio" name="l6_4" value="C"> (C) smoked-free</label>
-                <label class="option-label"><input type="radio" name="l6_4" value="D"> (D) smoke-free</label>
+                <label class="option-label"><input type="radio" name="l6_4" data-org="A"> (A) <span class="opt-text">free-smoked</span></label>
+                <label class="option-label"><input type="radio" name="l6_4" data-org="B"> (B) <span class="opt-text">free-smoke</span></label>
+                <label class="option-label"><input type="radio" name="l6_4" data-org="C"> (C) <span class="opt-text">smoked-free</span></label>
+                <label class="option-label"><input type="radio" name="l6_4" data-org="D"> (D) <span class="opt-text">smoke-free</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r13">
             5. It is impossible for me to jump as ______ as Eddie.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l6_5" value="A"> (A) length</label>
-                <label class="option-label"><input type="radio" name="l6_5" value="B"> (B) far</label>
-                <label class="option-label"><input type="radio" name="l6_5" value="C"> (C) longer</label>
-                <label class="option-label"><input type="radio" name="l6_5" value="D"> (D) further</label>
+                <label class="option-label"><input type="radio" name="l6_5" data-org="A"> (A) <span class="opt-text">length</span></label>
+                <label class="option-label"><input type="radio" name="l6_5" data-org="B"> (B) <span class="opt-text">far</span></label>
+                <label class="option-label"><input type="radio" name="l6_5" data-org="C"> (C) <span class="opt-text">longer</span></label>
+                <label class="option-label"><input type="radio" name="l6_5" data-org="D"> (D) <span class="opt-text">further</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r14">
             6. It ______ that juice is a good source of vitamins, but actually, eating fruits is a much better choice.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l6_6" value="A"> (A) though</label>
-                <label class="option-label"><input type="radio" name="l6_6" value="B"> (B) thinks</label>
-                <label class="option-label"><input type="radio" name="l6_6" value="C"> (C) is thought</label>
-                <label class="option-label"><input type="radio" name="l6_6" value="D"> (D) is thinking</label>
+                <label class="option-label"><input type="radio" name="l6_6" data-org="A"> (A) <span class="opt-text">though</span></label>
+                <label class="option-label"><input type="radio" name="l6_6" data-org="B"> (B) <span class="opt-text">thinks</span></label>
+                <label class="option-label"><input type="radio" name="l6_6" data-org="C"> (C) <span class="opt-text">is thought</span></label>
+                <label class="option-label"><input type="radio" name="l6_6" data-org="D"> (D) <span class="opt-text">is thinking</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r15">
             7. ______ is reported that the rain will continue until Friday.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l6_7" value="A"> (A) That</label>
-                <label class="option-label"><input type="radio" name="l6_7" value="B"> (B) It</label>
-                <label class="option-label"><input type="radio" name="l6_7" value="C"> (C) What</label>
-                <label class="option-label"><input type="radio" name="l6_7" value="D"> (D) Which</label>
+                <label class="option-label"><input type="radio" name="l6_7" data-org="A"> (A) <span class="opt-text">That</span></label>
+                <label class="option-label"><input type="radio" name="l6_7" data-org="B"> (B) <span class="opt-text">It</span></label>
+                <label class="option-label"><input type="radio" name="l6_7" data-org="C"> (C) <span class="opt-text">What</span></label>
+                <label class="option-label"><input type="radio" name="l6_7" data-org="D"> (D) <span class="opt-text">Which</span></label>
             </div>
         </div>
 
         <div class="question" id="q_r16">
             8. Lauren was running back and forth to make her kite fly as ______ as her brother's.<br>
             <div class="options-group">
-                <label class="option-label"><input type="radio" name="l6_8" value="A"> (A) higher</label>
-                <label class="option-label"><input type="radio" name="l6_8" value="B"> (B) highest</label>
-                <label class="option-label"><input type="radio" name="l6_8" value="C"> (C) high</label>
-                <label class="option-label"><input type="radio" name="l6_8" value="D"> (D) height</label>
+                <label class="option-label"><input type="radio" name="l6_8" data-org="A"> (A) <span class="opt-text">higher</span></label>
+                <label class="option-label"><input type="radio" name="l6_8" data-org="B"> (B) <span class="opt-text">highest</span></label>
+                <label class="option-label"><input type="radio" name="l6_8" data-org="C"> (C) <span class="opt-text">high</span></label>
+                <label class="option-label"><input type="radio" name="l6_8" data-org="D"> (D) <span class="opt-text">height</span></label>
             </div>
         </div>
 
@@ -421,7 +433,7 @@
 </div>
 
 <script>
-    // 選擇題標準答案對照
+    // 原始設定：哪一個字母代號代表正確答案內容
     const radioAnswers = {
         'l5_1': 'B', 'l5_2': 'B', 'l5_3': 'A', 'l5_4': 'D',
         'l5_5': 'A', 'l5_6': 'C', 'l5_7': 'A', 'l5_8': 'D',
@@ -431,12 +443,42 @@
 
     let wrongQuestions = [];
 
+    // ABCD位置不動，只隨機對調內部「文字內容」與「對應傳遞值」的機制
+    function shuffleOptionContents() {
+        const groups = document.querySelectorAll('.options-group');
+        groups.forEach(group => {
+            const labels = Array.from(group.querySelectorAll('.option-label'));
+            
+            // 抽出內部真正代表答案內容的文字與原始答案代號
+            let textArray = labels.map(label => {
+                return {
+                    text: label.querySelector('.opt-text').innerText,
+                    orgValue: label.querySelector('input[type="radio"]').getAttribute('data-org')
+                };
+            });
+
+            // 打亂文字陣列
+            for (let i = textArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [textArray[i], textArray[j]] = [textArray[j], textArray[i]];
+            }
+
+            // 把打亂後的文字內容與真正代表的 orgValue 灌回原本排好固定位置的 A B C D label 裡
+            labels.forEach((label, index) => {
+                label.querySelector('.opt-text').innerText = textArray[index].text;
+                // 用 value 紀錄當下這個選項對應回原本題目的「真正原始設定（A/B/C/D）」
+                label.querySelector('input[type="radio"]').value = textArray[index].orgValue;
+            });
+        });
+    }
+
     // 密碼驗證
     function verifyPassword() {
         const pw = document.getElementById('quizPassword').value;
         if (pw === '970120-981103') {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('quizScreen').style.display = 'block';
+            shuffleOptionContents(); // 進入考卷時進行內容打亂，ABCD位置保持不動
         } else {
             alert('密碼錯誤，拒絕存取！');
         }
@@ -447,24 +489,34 @@
         return str.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s+/g, ' ');
     }
 
+    // 清除舊答案提示的輔助函式
+    function clearFeedbacks() {
+        document.querySelectorAll('.ans-feedback').forEach(el => el.remove());
+        document.querySelectorAll('.correct-marker').forEach(el => el.remove());
+    }
+
     // 交卷批改主程式
     function gradeQuiz() {
         wrongQuestions = [];
         let totalItems = 0;
         let correctItems = 0;
+        
+        clearFeedbacks(); 
 
         // 1. 批改填充題與改寫句
         const textBlocks = document.querySelectorAll('.question:has(input[type="text"])');
         textBlocks.forEach(block => {
             let blockCorrect = true;
             const inputs = block.querySelectorAll('input[type="text"]');
+            let expectedAnsList = [];
             
             inputs.forEach(input => {
                 totalItems++;
                 const userAns = cleanString(input.value);
-                const targetAns = cleanString(input.getAttribute('data-ans'));
+                const targetAns = input.getAttribute('data-ans');
+                expectedAnsList.push(targetAns);
                 
-                if (userAns === targetAns) {
+                if (userAns === cleanString(targetAns)) {
                     correctItems++;
                 } else {
                     blockCorrect = false;
@@ -475,6 +527,11 @@
             if (!blockCorrect) {
                 block.classList.add('wrong-active');
                 wrongQuestions.push({type: 'text', id: block.id});
+                
+                const ansDiv = document.createElement('div');
+                ansDiv.className = 'ans-feedback';
+                ansDiv.innerText = `【正確答案：${expectedAnsList.join(' / ')}】`;
+                block.appendChild(ansDiv);
             } else {
                 block.classList.add('correct-active');
             }
@@ -485,14 +542,26 @@
             totalItems++;
             const questionBlock = document.querySelector(`input[name="${name}"]`).closest('.question');
             const selected = document.querySelector(`input[name="${name}"]:checked`);
+            const correctValue = radioAnswers[name]; // 正確的 orgValue (例如 'B')
             
             questionBlock.classList.remove('wrong-active', 'correct-active');
-            if (selected && selected.value === radioAnswers[name]) {
+            
+            // 判斷選中的選項其目前帶有的核心原始代號是否等於答案
+            if (selected && selected.value === correctValue) {
                 correctItems++;
                 questionBlock.classList.add('correct-active');
             } else {
                 questionBlock.classList.add('wrong-active');
                 wrongQuestions.push({type: 'radio', name: name, block: questionBlock});
+                
+                // 尋找此題當下拿到正確核心內容（value 等於正確 orgValue）的那個 radio 選項並標記
+                const correctRadio = questionBlock.querySelector(`input[name="${name}"][value="${correctValue}"]`);
+                if (correctRadio) {
+                    const marker = document.createElement('span');
+                    marker.className = 'correct-marker';
+                    marker.innerText = ' (正確答案 ✓)';
+                    correctRadio.closest('.option-label').appendChild(marker);
+                }
             }
         }
 
@@ -511,13 +580,13 @@
         }
     }
 
-    // 錯題重測機制
+    // 錯題重測機制（智慧大題標題隱藏機制版）
     function prepareRetry() {
-        // 先隱藏所有的題目
+        clearFeedbacks(); 
+
         const allQuestions = document.querySelectorAll('.question');
         allQuestions.forEach(q => q.style.display = 'none');
 
-        // 只把答錯的題目撈出來顯示，並洗掉之前的作答痕跡
         wrongQuestions.forEach(item => {
             if (item.type === 'text') {
                 const block = document.getElementById(item.id);
@@ -531,7 +600,26 @@
             }
         });
 
-        // 恢復下方與上方的分數面板狀態
+        const sections = document.querySelectorAll('.section-title');
+        sections.forEach(section => {
+            let nextEl = section.nextElementSibling;
+            let hasVisibleQuestion = false;
+            
+            while (nextEl && !nextEl.classList.contains('section-title') && !nextEl.classList.contains('action-container')) {
+                if (nextEl.classList.contains('question') && nextEl.style.display !== 'none') {
+                    hasVisibleQuestion = true;
+                    break;
+                }
+                nextEl = nextEl.nextElementSibling;
+            }
+            
+            if (!hasVisibleQuestion) {
+                section.style.display = 'none';
+            } else {
+                section.style.display = 'block';
+            }
+        });
+
         document.getElementById('scoreSummary').style.display = 'none';
         document.getElementById('retryBtn').style.display = 'none';
         document.getElementById('scoreDisplay').innerText = `得分：_______`;
