@@ -3,222 +3,542 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年度國防複習測驗</title>
+    <title>英文句型練習 L5-L6 數位線上考卷</title>
     <style>
-        :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; --bg: #f8f9fa; }
-        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; user-select: none; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        .stats-bar { display: flex; justify-content: space-between; padding: 10px; background: #eee; border-radius: 8px; margin-bottom: 20px; font-weight: bold; position: sticky; top: 0; z-index: 100; }
-        .question-card { margin-bottom: 25px; padding: 15px; border: 1px solid #ddd; border-radius: 10px; text-align: left; }
-        .options { display: grid; gap: 8px; margin-top: 10px; }
-        .opt-btn { padding: 12px; border: 1px solid #ccc; background: #fff; border-radius: 6px; cursor: pointer; text-align: left; }
-        .opt-btn.selected { background: var(--secondary); color: white; }
-        .main-btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; color: white; font-weight: bold; margin-top: 10px; }
-        .start-btn { background: var(--success); font-size: 1.5em; max-width: 300px; }
-        .submit-btn { background: var(--primary); }
-        .result-screen { display: none; }
-        .score-circle { width: 150px; height: 150px; border-radius: 50%; border: 10px solid var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 3em; margin: 20px auto; color: var(--primary); font-weight: bold; }
-        #warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(231, 76, 60, 0.95); color: white; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
-        .hidden { display: none; }
-        .review-item { text-align: left; padding: 15px; border-bottom: 1px solid #eee; }
-        .ans-text { font-weight: bold; padding: 2px 5px; border-radius: 4px; }
+        body {
+            font-family: "Times New Roman", Times, "Noto Sans TC", "Microsoft JhengHei", serif;
+            background-color: #f0f2f5;
+            color: #111;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        
+        /* 密碼畫面樣式 */
+        #authScreen {
+            max-width: 400px;
+            background: #fff;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        #authScreen input {
+            width: 80%;
+            padding: 10px;
+            font-size: 1.1em;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        #authScreen button {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1em;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* 試卷主體樣式 (PDF 紙本質感) */
+        #quizScreen {
+            display: none;
+            max-width: 820px;
+            background: #fff;
+            margin: 0 auto;
+            padding: 50px 60px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+        .paper-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+        }
+        .paper-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8em;
+            letter-spacing: 2px;
+        }
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .section-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 25px 0 15px 0;
+            text-decoration: underline;
+        }
+        .question {
+            margin-bottom: 20px;
+            font-size: 1.05em;
+            line-height: 1.7;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .hint {
+            color: #555;
+            font-size: 0.95em;
+            margin: 5px 0 5px 20px;
+        }
+        
+        /* 填充欄位與選擇鈕 */
+        input[type="text"] {
+            border: none;
+            border-bottom: 1px solid #000;
+            padding: 2px 5px;
+            font-size: 1em;
+            font-family: inherit;
+            background: transparent;
+            color: #000;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-bottom: 2px solid #2980b9;
+        }
+        .options-group {
+            margin-left: 25px;
+            margin-top: 5px;
+        }
+        .option-label {
+            display: inline-block;
+            margin-right: 25px;
+            cursor: pointer;
+        }
+        
+        /* 功能按鈕區 */
+        .action-container {
+            margin-top: 40px;
+            border-top: 1px dashed #ccc;
+            padding-top: 25px;
+            text-align: center;
+        }
+        .btn {
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.05em;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        .btn-submit { background-color: #2c3e50; }
+        .btn-retry { background-color: #e67e22; display: none; }
+        
+        /* 批改狀態顏色 */
+        .wrong-active {
+            border-left: 4px solid #e74c3c;
+            background-color: #fdf2f2;
+        }
+        .correct-active {
+            border-left: 4px solid #2ecc71;
+            background-color: #f4fbf7;
+        }
+        .score-board {
+            display: none;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #2c3e50;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
 
-<div id="warning-overlay">
-    <h1>⚠️ 最後警告 ⚠️</h1>
-    <p>測驗期間禁止切換視窗。再次違規將直接交卷，請不要挑戰開發者的權威！</p>
-    <button class="main-btn" style="width: 200px; background: white; color: var(--error);" onclick="closeWarning()">回到測驗</button>
+<div id="authScreen">
+    <h2>請輸入測驗密碼</h2>
+    <input type="password" id="quizPassword" placeholder="請輸入密碼">
+    <br>
+    <button onclick="verifyPassword()">進入考卷</button>
 </div>
 
-<div class="container">
-    <div id="start-screen">
-        <h1>114學年度國防複習測驗</h1>
-        <p style="color: var(--error); font-weight: bold; margin: 20px 0;">注意：按下確認後將進入全螢幕模式，不得切換視窗！</p>
-        <button class="main-btn start-btn" onclick="requestStart()">開始測驗</button>
-    </div>
-
-    <div id="quiz-ui" class="hidden">
-        <div class="stats-bar">
-            <span>進度：<span id="progress">0</span> / 35</span>
-            <span id="cheat-msg" style="color: var(--error);">切換限制：1 次</span>
+<div id="quizScreen">
+    <div class="paper-header">
+        <h1>英文句型練習 L5-L6 數位檢定測驗</h1>
+        <div class="info-bar">
+            <span>班級：____________</span>
+            <span>座號：______</span>
+            <span>姓名：____________</span>
+            <span id="scoreDisplay" style="color: #c0392b;">得分：_______</span>
         </div>
-        <div id="quiz-container"></div>
-        <button class="main-btn submit-btn" onclick="manualSubmit()">結算分數</button>
     </div>
-
-    <div id="result-screen" class="result-screen">
-        <h2>測驗結算報告</h2>
-        <div class="score-circle" id="final-score">0</div>
-        <p id="result-msg" style="font-size: 1.2em; font-weight: bold;"></p>
-        <div class="btn-group" style="display: flex; gap: 10px; margin: 20px 0;">
-            <button class="main-btn" style="background: #95a5a6;" onclick="location.reload()">全部重新</button>
-            <button id="retry-btn" class="main-btn" style="background: #f39c12; display: none;" onclick="retryWrongs()">重測錯題</button>
+    
+    <form id="quizForm">
+        <div class="section-title">二、填充 20%（一格 4 分）</div>
+        <div class="question" id="q_t1">
+            1. Jessica 的主意被視為我們當中最好的一個。<br>
+            Jessica's idea <input type="text" data-ans="is" style="width: 50px;"> <input type="text" data-ans="regarded" style="width: 100px;"> <input type="text" data-ans="as" style="width: 50px;"> one of the best among ours.
         </div>
-        <div id="review-list"></div>
-    </div>
+        <div class="question" id="q_t2">
+            2. 現在在線上購買一件家具是容易的。<br>
+            It is easy to buy a(n) <input type="text" data-ans="piece" style="width: 80px;"> <input type="text" data-ans="of" style="width: 40px;"> furniture online these days.
+        </div>
+
+        <div class="section-title">三、句型練習 40%（一題 8 分）</div>
+        <div class="question" id="q_t3">
+            1. The Dead Sea / in the world / as / is described / one of the most beautiful places（重組）<br>
+            <input type="text" data-ans="The Dead Sea is described as one of the most beautiful places in the world." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t4">
+            2. It has been / than humans / that bats / reported / have better hearing（重組）<br>
+            <input type="text" data-ans="It has been reported that bats have better hearing than humans" style="width: 95%;">
+        </div>
+        <div class="question" id="q_t5">
+            3. The White House is a building that is famous around the world.<br>
+            <div class="hint">提示：請以 The White House is a... 開頭並以複合形容詞改寫句子。</div>
+            <input type="text" data-ans="The White House is a world-famous building." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t6">
+            4. People say that this necklace is worth millions of dollars.<br>
+            <div class="hint">提示：請以 It... 改寫句子。</div>
+            <input type="text" data-ans="It is said that this necklace is worth millions of dollars." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t7">
+            5. My sister's hair is thirty inches long. <br> My hair is thirty inches long.<br>
+            <div class="hint">提示：請以 My sister's hair 開頭並以 as... as 合併句子。</div>
+            <input type="text" data-ans="My sister's hair is as long as my hair." style="width: 95%;">
+        </div>
+
+        <div class="section-title">二、填充 20%（一格 4 分）</div>
+        <div class="question" id="q_t8">
+            1. 這裡的天氣就像臺北的一樣。<br>
+            The weather here is like <input type="text" data-ans="that" style="width: 70px;"> <input type="text" data-ans="of" style="width: 50px;"> Taipei.
+        </div>
+        <div class="question" id="q_t9">
+            2. 由於人類活動，許多生物不再存在於世界上。<br>
+            Many creatures no longer exist on Earth <input type="text" data-ans="as" style="width: 40px;"> a <input type="text" data-ans="result" style="width: 80px;"> <input type="text" data-ans="of" style="width: 40px;"> human activities.
+        </div>
+
+        <div class="section-title">三、句型練習 40%（一題 8 分）</div>
+        <div class="question" id="q_t10">
+            1. he cares about / at the animal shelter / street animals / Bill volunteers / since（重組）<br>
+            <input type="text" data-ans="Bill volunteers at the animal shelter since he cares about street animals." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t11">
+            2. I have homework to do, so I can't play online games with you.<br>
+            <div class="hint">提示：請以 I have... This is why... 改寫句子。</div>
+            <input type="text" data-ans="I have homework to do. This is why I can't play online games with you." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t12">
+            3. The soup was very hot, and I couldn't eat it.<br>
+            <div class="hint">提示：請以 so... that... 改寫句子。</div>
+            <input type="text" data-ans="The soup was so hot that I couldn't eat it." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t13">
+            4. We are discussing something. Do we want to have a BBQ party?<br>
+            <div class="hint">提示：請以 ... whether... 合併句子。</div>
+            <input type="text" data-ans="We are discussing whether we want to have a BBQ party." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t14">
+            5. It was a crowded train. I could barely move.<br>
+            <div class="hint">提示：請以 such... that... 合併句子。</div>
+            <input type="text" data-ans="It was such a crowded train that I could barely move." style="width: 95%;">
+        </div>
+
+
+        <div class="section-title">句型練習本 L5 一、文法選擇 40%（一題 5 分）</div>
+        
+        <div class="question" id="q_r1">
+            1. The scooter rider was fined ______ breaking a traffic rule.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_1" value="A"> (A) because</label>
+                <label class="option-label"><input type="radio" name="l5_1" value="B"> (B) due to</label>
+                <label class="option-label"><input type="radio" name="l5_1" value="C"> (C) instead of</label>
+                <label class="option-label"><input type="radio" name="l5_1" value="D"> (D) as a result</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r2">
+            2. Billy called his wife to ask ______ she needed anything from the supermarket.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_2" value="A"> (A) and</label>
+                <label class="option-label"><input type="radio" name="l5_2" value="B"> (B) if</label>
+                <label class="option-label"><input type="radio" name="l5_2" value="C"> (C) what</label>
+                <label class="option-label"><input type="radio" name="l5_2" value="D"> (D) that</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r3">
+            3. As children grow older, their opinions often become different from ______ of their parents.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_3" value="A"> (A) those</label>
+                <label class="option-label"><input type="radio" name="l5_3" value="B"> (B) that</label>
+                <label class="option-label"><input type="radio" name="l5_3" value="C"> (C) them</label>
+                <label class="option-label"><input type="radio" name="l5_3" value="D"> (D) which</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r4">
+            4. Andrew was ______ shocked that he didn't know how to respond.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_4" value="A"> (A) over</label>
+                <label class="option-label"><input type="radio" name="l5_4" value="B"> (B) too</label>
+                <label class="option-label"><input type="radio" name="l5_4" value="C"> (C) very</label>
+                <label class="option-label"><input type="radio" name="l5_4" value="D"> (D) so</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r5">
+            5. What is your reason ______ studying in a vocational high school?<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_5" value="A"> (A) for</label>
+                <label class="option-label"><input type="radio" name="l5_5" value="B"> (B) to</label>
+                <label class="option-label"><input type="radio" name="l5_5" value="C"> (C) of</label>
+                <label class="option-label"><input type="radio" name="l5_5" value="D"> (D) over</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r6">
+            6. The success of the plan depends on ______ we can find the perfect location.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_6" value="A"> (A) what</label>
+                <label class="option-label"><input type="radio" name="l5_6" value="B"> (B) that</label>
+                <label class="option-label"><input type="radio" name="l5_6" value="C"> (C) whether</label>
+                <label class="option-label"><input type="radio" name="l5_6" value="D"> (D) however</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r7">
+            7. It was ______ great news that I couldn't believe it was true.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_7" value="A"> (A) such a</label>
+                <label class="option-label"><input type="radio" name="l5_7" value="B"> (B) a such</label>
+                <label class="option-label"><input type="radio" name="l5_7" value="C"> (C) such</label>
+                <label class="option-label"><input type="radio" name="l5_7" value="D"> (D) so a</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r8">
+            8. Some Asian girls wear jackets when they walk in the sun. ______ they don't want to get tanned.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_8" value="A"> (A) Therefore</label>
+                <label class="option-label"><input type="radio" name="l5_8" value="B"> (B) This is why</label>
+                <label class="option-label"><input type="radio" name="l5_8" value="C"> (C) Due to</label>
+                <label class="option-label"><input type="radio" name="l5_8" value="D"> (D) That is because</label>
+            </div>
+        </div>
+
+        <div class="section-title">句型練習本 L6 一、文法選擇 40%（一題 5 分）</div>
+
+        <div class="question" id="q_r9">
+            1. Ben's mother called him down for dinner as ______ to his friend on the phone.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_1" value="A"> (A) talked</label>
+                <label class="option-label"><input type="radio" name="l6_1" value="B"> (B) to talk</label>
+                <label class="option-label"><input type="radio" name="l6_1" value="C"> (C) he has talked</label>
+                <label class="option-label"><input type="radio" name="l6_1" value="D"> (D) he was talking</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r10">
+            2. The weather report says that this week will be ______ cold ______ last week.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_2" value="A"> (A) as; as</label>
+                <label class="option-label"><input type="radio" name="l6_2" value="B"> (B) more; than</label>
+                <label class="option-label"><input type="radio" name="l6_2" value="C"> (C) so; that</label>
+                <label class="option-label"><input type="radio" name="l6_2" value="D"> (D) such; that</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r11">
+            3. Could you give me ______ on traveling by airplane?<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_3" value="A"> (A) a piece of advice</label>
+                <label class="option-label"><input type="radio" name="l6_3" value="B"> (B) an advice</label>
+                <label class="option-label"><input type="radio" name="l6_3" value="C"> (C) some advices</label>
+                <label class="option-label"><input type="radio" name="l6_3" value="D"> (D) a word of advices</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r12">
+            4. Many hotels have adopted a ______ policy for all indoor areas.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_4" value="A"> (A) free-smoked</label>
+                <label class="option-label"><input type="radio" name="l6_4" value="B"> (B) free-smoke</label>
+                <label class="option-label"><input type="radio" name="l6_4" value="C"> (C) smoked-free</label>
+                <label class="option-label"><input type="radio" name="l6_4" value="D"> (D) smoke-free</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r13">
+            5. It is impossible for me to jump as ______ as Eddie.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_5" value="A"> (A) length</label>
+                <label class="option-label"><input type="radio" name="l6_5" value="B"> (B) far</label>
+                <label class="option-label"><input type="radio" name="l6_5" value="C"> (C) longer</label>
+                <label class="option-label"><input type="radio" name="l6_5" value="D"> (D) further</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r14">
+            6. It ______ that juice is a good source of vitamins, but actually, eating fruits is a much better choice.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_6" value="A"> (A) though</label>
+                <label class="option-label"><input type="radio" name="l6_6" value="B"> (B) thinks</label>
+                <label class="option-label"><input type="radio" name="l6_6" value="C"> (C) is thought</label>
+                <label class="option-label"><input type="radio" name="l6_6" value="D"> (D) is thinking</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r15">
+            7. ______ is reported that the rain will continue until Friday.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_7" value="A"> (A) That</label>
+                <label class="option-label"><input type="radio" name="l6_7" value="B"> (B) It</label>
+                <label class="option-label"><input type="radio" name="l6_7" value="C"> (C) What</label>
+                <label class="option-label"><input type="radio" name="l6_7" value="D"> (D) Which</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r16">
+            8. Lauren was running back and forth to make her kite fly as ______ as her brother's.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_8" value="A"> (A) higher</label>
+                <label class="option-label"><input type="radio" name="l6_8" value="B"> (B) highest</label>
+                <label class="option-label"><input type="radio" name="l6_8" value="C"> (C) high</label>
+                <label class="option-label"><input type="radio" name="l6_8" value="D"> (D) height</label>
+            </div>
+        </div>
+
+        <div class="action-container">
+            <div id="scoreSummary" class="score-board"></div>
+            <button type="button" class="btn btn-submit" id="submitBtn" onclick="gradeQuiz()">交卷並核對答案</button>
+            <button type="button" class="btn btn-retry" id="retryBtn" onclick="prepareRetry()">錯題重新測試</button>
+        </div>
+    </form>
 </div>
 
 <script>
-    const fullBank = [
-        { q: "關鍵基礎設施核心定義，下列何者「最不符合」？", o: ["(A)東港海事", "(B)桃園國際機場", "(C)台電變電所", "(D)臺大醫院"], a: "A" },
-        { q: "申請國軍協助救災辦法，由國防部會同哪一機關定之？", o: ["(A)內政部", "(B)交通部", "(C)經濟部", "(D)財政部"], a: "A" },
-        { q: "國軍部隊每年最重要的實兵演練是？", o: ["(A)漢光演習", "(B)萬安演習", "(C)同心演習", "(D)民安演習"], a: "A" },
-        { q: "《全動法》第17條，辦理國防工業調查應與哪部會組成作業編組？", o: ["(A)內政部", "(B)農業部", "(C)交通部", "(D)經濟部"], a: "D" },
-        { q: "「中央全民防衛動員準備業務會報」召集人由誰兼任？", o: ["(A)國安局長", "(B)參謀總長", "(C)國防部長", "(D)行政院長"], a: "D" },
-        { q: "與青年服勤動員具有緊密關聯性的教育類型是？", o: ["(A)全民國防教育", "(B)災害防救教育", "(C)軍事訓練教育", "(D)交通安全教育"], a: "B" },
-        { q: "依《兵役法施行法》，教育召集於退伍後幾年內？", o: ["(A)7", "(B)8", "(C)9", "(D)10"], a: "B" },
-        { q: "動員準備事項應由何者納入年度施政計畫？", o: ["(A)國防部與內政", "(B)僅中央機關", "(C)中央各機關及地方政府", "(D)總統發布命令後"], a: "C" },
-        { q: "青年學生在戰時「不是」發揮哪種作用？", o: ["(A)後勤支援", "(B)自助助人", "(C)第一線戰場執行任務", "(D)協助交通管制"], a: "C" },
-        { q: "學校青年防護團遴選條件不包含？", o: ["(A)服務熱心", "(B)具專長技能", "(C)志願參加", "(D)體態較佳"], a: "D" },
-        { q: "現代國防不再是單純軍事行為，不包含哪一層面？", o: ["(A)國力", "(B)軍力", "(C)民力", "(D)財力"], a: "D" },
-        { q: "我國軍民聯合防空演習代號是？", o: ["(A)萬箭", "(B)萬平", "(C)萬安", "(D)萬乘"], a: "C" },
-        { q: "關鍵基礎設施防護強調的「韌性」，核心目標為何？", o: ["(A)數據雲端化", "(B)確保不會受損", "(C)遭受攻擊後維持核心能力並迅速恢復", "(D)降低建設成本"], a: "C" },
-        { q: "「毒化物質災害」應如何處置？", o: ["(A)沖脫泡蓋送", "(B)避脫沖蓋送", "(C)脫沖泡蓋送", "(D)脫沖避蓋送"], a: "B" },
-        { q: "災害防救應變除了政府，何人也必須體認危險？", o: ["(A)個人", "(B)縣市長", "(C)行政院長", "(D)總統"], a: "A" },
-        { q: "2025年花蓮馬太鞍溪堰塞湖事件，中央業務主管機關為？", o: ["(A)內政部", "(B)經濟部", "(C)環境部", "(D)農業部"], a: "D" },
-        { q: "「平時急救宣導」與「救災裝備檢修」由哪組負責？", o: ["(A)通報組", "(B)避難引導組", "(C)搶救組", "(D)安全防護組"], a: "C" },
-        { q: "臺灣位於哪一個地震帶？", o: ["(A)歐亞地震帶", "(B)環太平洋地震帶", "(C)大陸斷裂谷", "(D)大中洋脊"], a: "B" },
-        { q: "面對複合式災害，全民應秉持何種精神？", o: ["(A)減災即作戰", "(B)救災即作戰", "(C)防災即作戰", "(D)離災即作戰"], a: "B" },
-        { q: "民國89年7月19日訂頒之災害防救核心法規？", o: ["(A)停班課辦法", "(B)國軍救災辦法", "(C)災害防救法", "(D)事故調查會"], a: "C" },
-        { q: "派員進駐縣市災害應變中心之兵力物力協調單位？", o: ["(A)後方指揮部", "(B)後送指揮部", "(C)後備指揮部", "(D)後勤指揮部"], a: "C" },
-        { q: "我國中央災害防救會報由何人主持？", o: ["(A)總統", "(B)副總統", "(C)行政院長", "(D)國防部長"], a: "C" },
-        { q: "下列何者「不是」國軍救災指導？", o: ["(A)超前部署", "(B)預置兵力", "(C)隨時防救", "(D)無縫接軌"], a: "D" },
-        { q: "執行兵力派遣、數據統計任務之應變中心是？", o: ["(A)國防部", "(B)海巡署", "(C)消防署", "(D)警政署"], a: "A" },
-        { q: "哪一項不是校園安全狀況區分類別？", o: ["(A)一般性", "(B)集體性重大", "(C)全國性重大", "(D)地方性事故"], a: "D" },
-        { q: "學校災害防救意義不包含？", o: ["(A)協助避災", "(B)協助災民", "(C)收容災民", "(D)協助補助申請"], a: "D" },
-        { q: "校安中心指定待命時間為何？", o: ["(A)8小時", "(B)12小時", "(C)16小時", "(D)24小時"], a: "D" },
-        { q: "哪一個不是我國災害防救階段？", o: ["(A)減災", "(B)整備", "(C)復原", "(D)離災"], a: "D" },
-        { q: "高中以上校安中心聯繫待命方式由何機關規定？", o: ["(A)教育部", "(B)內政部", "(C)國防部", "(D)法務部"], a: "A" },
-        { q: "校安中心組織運作採取何種方式？", o: ["(A)興趣編組", "(B)任務編組", "(C)職務編組", "(D)臨時指派"], a: "B" },
-        { q: "「全民防衛韌性委員會」副召集人不包含？", o: ["(A)行政院長", "(B)國防部長", "(C)內政部長", "(D)總統府秘書長"], a: "D" },
-        { q: "防災計畫應規劃之內容？", o: ["(A)集結點", "(B)聯繫方式", "(C)避難路線", "(D)物資發放"], a: "D" },
-        { q: "軍事侵略應變方式，下列何者錯誤？", o: ["(A)地上優於地下", "(B)室內優於室外", "(C)遠離門窗", "(D)避開危險品"], a: "A" },
-        { q: "學校校安事件獲悉管道不包含？", o: ["(A)學生反映", "(B)匿名檢舉", "(C)家長通報", "(D)警方通報"], a: "B" },
-        { q: "緊急避難包「非」求生必需品？", o: ["(A)藥品", "(B)信用卡", "(C)食物", "(D)衣物"], a: "B" }
-    ];
+    // 選擇題標準答案對照
+    const radioAnswers = {
+        'l5_1': 'B', 'l5_2': 'B', 'l5_3': 'A', 'l5_4': 'D',
+        'l5_5': 'A', 'l5_6': 'C', 'l5_7': 'A', 'l5_8': 'D',
+        'l6_1': 'D', 'l6_2': 'A', 'l6_3': 'A', 'l6_4': 'D',
+        'l6_5': 'B', 'l6_6': 'C', 'l6_7': 'B', 'l6_8': 'C'
+    };
 
-    let currentPool = [];
-    let userSelections = {};
-    let cheatCount = 0;
-    let quizActive = false;
+    let wrongQuestions = [];
 
-    function requestStart() {
-        if (confirm("確認後進入全螢幕，切換視窗 2 次將強制交卷！")) {
-            enterFS();
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('quiz-ui').classList.remove('hidden');
-            quizActive = true;
-            initQuiz(fullBank);
+    // 密碼驗證
+    function verifyPassword() {
+        const pw = document.getElementById('quizPassword').value;
+        if (pw === '970120-981103') {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+        } else {
+            alert('密碼錯誤，拒絕存取！');
         }
     }
 
-    function enterFS() {
-        const el = document.documentElement;
-        if (el.requestFullscreen) el.requestFullscreen();
-        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    // 字串校對清洗 (自動忽略大小寫與標點符號的差異)
+    function cleanString(str) {
+        return str.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s+/g, ' ');
     }
 
-    function initQuiz(questions) {
-        currentPool = [...questions];
-        for (let i = currentPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [currentPool[i], currentPool[j]] = [currentPool[j], currentPool[i]];
-        }
-        userSelections = {};
-        renderQuiz();
-    }
+    // 交卷批改主程式
+    function gradeQuiz() {
+        wrongQuestions = [];
+        let totalItems = 0;
+        let correctItems = 0;
 
-    function renderQuiz() {
-        const container = document.getElementById('quiz-container');
-        container.innerHTML = '';
-        currentPool.forEach((item, idx) => {
-            const card = document.createElement('div');
-            card.className = 'question-card';
-            card.innerHTML = `<strong>${idx+1}. ${item.q}</strong><div class="options" id="q-${idx}"></div>`;
-            container.appendChild(card);
-            item.o.forEach((opt, oIdx) => {
-                const char = String.fromCharCode(65 + oIdx);
-                const btn = document.createElement('button');
-                btn.className = 'opt-btn';
-                btn.innerText = opt;
-                btn.onclick = () => {
-                    userSelections[idx] = char;
-                    Array.from(btn.parentElement.children).forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    document.getElementById('progress').innerText = Object.keys(userSelections).length;
-                };
-                document.getElementById(`q-${idx}`).appendChild(btn);
+        // 1. 批改填充題與改寫句
+        const textBlocks = document.querySelectorAll('.question:has(input[type="text"])');
+        textBlocks.forEach(block => {
+            let blockCorrect = true;
+            const inputs = block.querySelectorAll('input[type="text"]');
+            
+            inputs.forEach(input => {
+                totalItems++;
+                const userAns = cleanString(input.value);
+                const targetAns = cleanString(input.getAttribute('data-ans'));
+                
+                if (userAns === targetAns) {
+                    correctItems++;
+                } else {
+                    blockCorrect = false;
+                }
             });
-        });
-        window.scrollTo(0,0);
-    }
 
-    function manualSubmit() {
-        if (confirm("確定交卷結算嗎？")) performSubmit();
-    }
-
-    function performSubmit() {
-        quizActive = false;
-        document.getElementById('quiz-ui').classList.add('hidden');
-        document.getElementById('result-screen').style.display = 'block';
-        
-        let correctCount = 0;
-        const wrongs = [];
-        const review = document.getElementById('review-list');
-        review.innerHTML = '<h3>答案詳解：</h3>';
-
-        currentPool.forEach((item, idx) => {
-            const userCode = userSelections[idx];
-            const userText = userCode ? item.o[userCode.charCodeAt(0) - 65] : "未作答";
-            const rightCode = item.a;
-            const rightText = item.o[rightCode.charCodeAt(0) - 65];
-            const isRight = userCode === rightCode;
-
-            if (isRight) correctCount++; else wrongs.push(item);
-
-            review.innerHTML += `
-                <div class="review-item">
-                    <p><strong>${idx+1}. ${item.q}</strong></p>
-                    <p>您的答案：<span class="ans-text" style="color:${isRight ? 'green' : 'red'}">${userText}</span></p>
-                    ${!isRight ? `<p>正確答案：<span class="ans-text" style="color:green">${rightText}</span></p>` : ''}
-                </div>`;
-        });
-
-        const score = Math.round((correctCount / currentPool.length) * 100);
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('result-msg').innerText = `答對：${correctCount} / ${currentPool.length}`;
-        
-        if (wrongs.length > 0) {
-            const btn = document.getElementById('retry-btn');
-            btn.style.display = 'block';
-            btn.onclick = () => {
-                document.getElementById('result-screen').style.display = 'none';
-                document.getElementById('quiz-ui').classList.remove('hidden');
-                quizActive = true;
-                initQuiz(wrongs);
-            };
-        }
-    }
-
-    document.addEventListener("visibilitychange", () => {
-        if (document.hidden && quizActive) {
-            cheatCount++;
-            if (cheatCount >= 2) {
-                alert("多次切換視窗，強制交卷！");
-                performSubmit();
+            block.classList.remove('wrong-active', 'correct-active');
+            if (!blockCorrect) {
+                block.classList.add('wrong-active');
+                wrongQuestions.push({type: 'text', id: block.id});
             } else {
-                document.getElementById('warning-overlay').style.display = 'flex';
-                document.getElementById('cheat-msg').innerText = "切換限制：0 次，請不要挑戰開發者的權威！";
+                block.classList.add('correct-active');
+            }
+        });
+
+        // 2. 批改單選選擇題
+        for (let name in radioAnswers) {
+            totalItems++;
+            const questionBlock = document.querySelector(`input[name="${name}"]`).closest('.question');
+            const selected = document.querySelector(`input[name="${name}"]:checked`);
+            
+            questionBlock.classList.remove('wrong-active', 'correct-active');
+            if (selected && selected.value === radioAnswers[name]) {
+                correctItems++;
+                questionBlock.classList.add('correct-active');
+            } else {
+                questionBlock.classList.add('wrong-active');
+                wrongQuestions.push({type: 'radio', name: name, block: questionBlock});
             }
         }
-    });
 
-    function closeWarning() {
-        document.getElementById('warning-overlay').style.display = 'none';
-        enterFS();
+        const finalScore = Math.round((correctItems / totalItems) * 100);
+        document.getElementById('scoreDisplay').innerText = `得分：${finalScore} 分`;
+        
+        const summary = document.getElementById('scoreSummary');
+        summary.style.display = 'block';
+        summary.innerHTML = `測驗結束！總得分：${finalScore} 分 / 100 分<br>共計錯題：${wrongQuestions.length} 題`;
+
+        if (wrongQuestions.length > 0) {
+            document.getElementById('retryBtn').style.display = 'inline-block';
+        } else {
+            document.getElementById('retryBtn').style.display = 'none';
+            summary.innerHTML += "<br><span style='color:#2ecc71;'>完美滿分！</span>";
+        }
+    }
+
+    // 錯題重測機制
+    function prepareRetry() {
+        // 先隱藏所有的題目
+        const allQuestions = document.querySelectorAll('.question');
+        allQuestions.forEach(q => q.style.display = 'none');
+
+        // 只把答錯的題目撈出來顯示，並洗掉之前的作答痕跡
+        wrongQuestions.forEach(item => {
+            if (item.type === 'text') {
+                const block = document.getElementById(item.id);
+                block.style.display = 'block';
+                block.classList.remove('wrong-active', 'correct-active');
+                block.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
+            } else if (item.type === 'radio') {
+                item.block.style.display = 'block';
+                item.block.classList.remove('wrong-active', 'correct-active');
+                item.block.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+            }
+        });
+
+        // 恢復下方與上方的分數面板狀態
+        document.getElementById('scoreSummary').style.display = 'none';
+        document.getElementById('retryBtn').style.display = 'none';
+        document.getElementById('scoreDisplay').innerText = `得分：_______`;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 </script>
+
 </body>
 </html>
